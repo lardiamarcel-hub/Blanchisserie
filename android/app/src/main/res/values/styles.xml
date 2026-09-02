@@ -1,0 +1,12 @@
+<resources>
+    <!-- Thème affiché pendant le tout premier lancement, avant que Flutter
+         ne prenne le relais. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+
+    <!-- Thème utilisé une fois Flutter chargé. -->
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

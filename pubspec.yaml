@@ -1,0 +1,37 @@
+name: blanchisserie
+description: Application de collecte et livraison de blanchisserie (Ouagadougou).
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+
+  # Backend Firebase
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  firebase_messaging: ^14.9.4
+  firebase_storage: ^11.7.7
+
+  # Etat / architecture
+  flutter_riverpod: ^2.5.1
+
+  # Utilitaires (choisis pour rester légers)
+  intl: ^0.19.0
+  flutter_local_notifications: ^17.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

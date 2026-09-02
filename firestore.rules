@@ -1,0 +1,93 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function estConnecte() {
+      return request.auth != null;
+    }
+
+    // Avant la toute première résolution de profil (juste après l'OTP),
+    // le document users/{uid} de l'appelant n'existe pas encore : on
+    // vérifie toujours son existence avant get(), sans quoi Firestore lève
+    // une erreur qui ferait échouer l'évaluation de la règle entière.
+    function monProfilExiste() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function estGerant() {
+      return estConnecte() && monProfilExiste() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'gerant';
+    }
+
+    function estCollecteur() {
+      return estConnecte() && monProfilExiste() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'collecteur';
+    }
+
+    // ---------------------------------------------------------------
+    // Utilisateurs
+    // ---------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if estConnecte() && (request.auth.uid == uid || estGerant());
+      // Un utilisateur ne peut créer/modifier que son propre profil, et ne
+      // peut jamais s'auto-attribuer un rôle différent de celui déjà fixé
+      // (le rôle est décidé une fois par le gérant ou par défaut "client").
+      allow create: if estConnecte() && request.auth.uid == uid;
+      allow update: if estConnecte() && request.auth.uid == uid
+                    && request.resource.data.role == resource.data.role;
+      allow update: if estGerant();
+    }
+
+    // Comptes pré-inscrits par le gérant (collecteurs) en attente de leur
+    // première connexion : le gérant les gère ; une personne pré-inscrite
+    // ne peut lire QUE le document correspondant à son propre numéro
+    // (comparé au numéro vérifié par Firebase Auth), jamais la liste
+    // complète, pour éviter toute fuite des numéros/noms pré-enregistrés.
+    match /comptesPreinscrits/{telephone} {
+      allow get: if estGerant() ||
+        (estConnecte() && request.auth.token.phone_number == telephone);
+      allow list: if estGerant();
+      allow create, update: if estGerant();
+      // La suppression se produit aussi côté personne pré-inscrite : c'est
+      // elle qui "consomme" son pré-enregistrement à la première connexion
+      // (voir FirestoreService.resoudreProfilApresConnexion).
+      allow delete: if estGerant() ||
+        (estConnecte() && request.auth.token.phone_number == telephone);
+    }
+
+    // ---------------------------------------------------------------
+    // Commandes
+    // ---------------------------------------------------------------
+    match /commandes/{commandeId} {
+      allow read: if estConnecte() && (
+        resource.data.clientId == request.auth.uid ||
+        estCollecteur() ||
+        estGerant()
+      );
+
+      allow create: if estConnecte() &&
+        request.resource.data.clientId == request.auth.uid &&
+        request.resource.data.statut == 'demandeCreee';
+
+      // Le client ne peut mettre à jour que sa note (étoiles) une fois livré.
+      allow update: if estConnecte() &&
+        resource.data.clientId == request.auth.uid &&
+        resource.data.statut == 'livree' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['etoiles']);
+
+      // Le collecteur fait avancer le statut (collecte, poids, livraison, paiement).
+      allow update: if estCollecteur();
+
+      allow update: if estGerant();
+    }
+
+    // ---------------------------------------------------------------
+    // Tarifs
+    // ---------------------------------------------------------------
+    match /tarifs/{tarifId} {
+      allow read: if estConnecte();
+      allow write: if estGerant();
+    }
+  }
+}
