@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -21,7 +22,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(gererMessageArrierePlan);
+
+  if (!kIsWeb) {
+    // Sur le web, les notifications d'arrière-plan sont gérées par le
+    // service worker (web/firebase-messaging-sw.js), pas par ce callback
+    // Dart qui ne peut pas s'exécuter onglet fermé.
+    FirebaseMessaging.onBackgroundMessage(gererMessageArrierePlan);
+  }
 
   // Active la persistance offline Firestore : les commandes créées ou les
   // statuts changés sans réseau sont mis en file d'attente localement et

@@ -39,6 +39,7 @@ firestore.rules             Règles de sécurité Firestore
 firestore.indexes.json      Index composites nécessaires aux requêtes
 firebase.json               Config déploiement (rules, indexes, functions)
 android/                    Projet Android (Gradle, manifeste, icônes placeholder)
+web/                        Cible Flutter Web (index.html, manifest, service worker FCM)
 ```
 
 ## Modèle de données Firestore
@@ -77,13 +78,22 @@ flutter pub get
 
 ```bash
 dart pub global activate flutterfire_cli
-flutterfire configure
+flutterfire configure --platforms=android,web
 ```
 
 Cette commande régénère `lib/firebase_options.dart` avec les vraies clés
-de votre projet et télécharge automatiquement `android/app/google-services.json`
-(ce fichier n'est pas versionné, voir `.gitignore` — c'est normal, chaque
-développeur/environnement doit récupérer le sien).
+de votre projet (Android **et** web), et télécharge automatiquement
+`android/app/google-services.json` (ce fichier n'est pas versionné, voir
+`.gitignore` — c'est normal, chaque développeur/environnement doit
+récupérer le sien).
+
+Pour la version web, complétez en plus **manuellement**
+`web/firebase-messaging-sw.js` avec les mêmes valeurs que le bloc `web`
+généré dans `firebase_options.dart` (ce fichier tourne hors de Dart, il
+ne peut pas les lire), et renseignez la clé VAPID dans
+`lib/services/notification_service.dart` (`_cleVapidWeb`), récupérable
+dans Console Firebase → Paramètres du projet → Cloud Messaging → Web
+Push certificates.
 
 ### 4. Activer les services Firebase nécessaires
 
@@ -130,6 +140,37 @@ flutter build apk --release
 > sont absents. Les icônes de lancement fournies sont des aplats de
 > couleur temporaires : remplacez-les (ex: avec le package
 > `flutter_launcher_icons`) avant publication.
+
+### 8. Lancer / déployer la version web
+
+```bash
+flutter run -d chrome                 # test en local
+flutter build web --release           # génère build/web/ (statique)
+```
+
+`build/web/` est un site statique déployable tel quel sur n'importe quel
+hébergeur (Firebase Hosting, Netlify, Vercel, un simple serveur nginx...).
+Avec Firebase Hosting déjà configuré pour ce projet :
+
+```bash
+firebase deploy --only hosting
+```
+
+(ajoutez d'abord un bloc `"hosting"` dans `firebase.json` pointant sur
+`build/web` si ce n'est pas déjà fait — `firebase init hosting` s'en charge).
+
+**Différences web à connaître :**
+
+- La connexion par téléphone/OTP fonctionne, mais Firebase affiche un
+  léger défi reCAPTCHA invisible (normal, propre au web) avant l'envoi du
+  SMS.
+- Les notifications reçues **onglet actif** ne s'affichent pas en toast
+  (le package `flutter_local_notifications` ne supporte pas le web) ;
+  celles reçues **onglet en arrière-plan ou fermé** s'affichent nativement
+  grâce à `web/firebase-messaging-sw.js`. Le suivi de commande dans
+  l'app reste à jour en temps réel dans tous les cas (Firestore).
+- Sur certains navigateurs (Safari notamment), les notifications push web
+  ont des limitations connues côté navigateur, indépendantes de l'app.
 
 ## À propos des versions de dépendances
 
