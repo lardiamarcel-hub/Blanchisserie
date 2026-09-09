@@ -12,9 +12,6 @@ build/
 android/.gradle/
 android/captures/
 android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
-android/gradlew
-android/gradlew.bat
-android/gradle/wrapper/gradle-wrapper.jar
 android/local.properties
 android/key.properties
 *.jks

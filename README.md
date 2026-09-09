@@ -156,13 +156,12 @@ flutter run              # test sur un appareil/émulateur
 flutter build apk --release
 ```
 
-> Note Android : ce dépôt contient un projet `android/` fonctionnel
-> (Gradle, manifeste, icônes) mais pas les fichiers binaires générés par
-> Flutter lui-même (`gradlew`, `gradle-wrapper.jar`) — Flutter les
-> régénère automatiquement au premier `flutter run`/`flutter build` s'ils
-> sont absents. Les icônes de lancement fournies sont des aplats de
-> couleur temporaires : remplacez-les (ex: avec le package
-> `flutter_launcher_icons`) avant publication.
+> Note Android : le dossier `android/` (Gradle en Kotlin DSL, `gradlew`
+> inclus) a été généré avec `flutter create` puis adapté (identifiant
+> d'application, minSdk 23 pour l'auth téléphone, dépendances Firebase,
+> plugin `google-services` conditionnel). Les icônes de lancement
+> fournies sont des aplats de couleur temporaires : remplacez-les (ex:
+> avec le package `flutter_launcher_icons`) avant publication.
 
 ### 8. Lancer / déployer la version web
 

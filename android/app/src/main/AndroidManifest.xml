@@ -9,6 +9,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -29,4 +30,12 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="statuts_commandes"/>
     </application>
+    <!-- Requis pour que le moteur Flutter puisse détecter les apps de
+         traitement de texte (io.flutter.plugin.text.ProcessTextPlugin). -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
 </manifest>
