@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../models/tarif_model.dart';
 import '../../providers/services_providers.dart';
 import '../../providers/tarif_providers.dart';
