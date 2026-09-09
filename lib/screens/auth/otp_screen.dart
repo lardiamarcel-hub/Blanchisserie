@@ -47,7 +47,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             identifiantVerification: widget.identifiantVerification,
             code: code,
           );
-      // La connexion réussie déclenche AuthGate qui gère la suite.
+      // AuthGate (sous cet écran dans la pile) a déjà basculé sur le bon
+      // écran ; il suffit de dépiler pour le révéler.
+      if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (e) {
       setState(() {
         _erreur = e.code == 'invalid-verification-code'

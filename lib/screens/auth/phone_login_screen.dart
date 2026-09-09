@@ -71,7 +71,9 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
       surValidationAutomatique: () {
         if (!mounted) return;
         setState(() => _envoiEnCours = false);
-        // La connexion se termine automatiquement ; AuthGate prendra le relais.
+        // AuthGate (sous cet écran dans la pile) a déjà basculé sur le bon
+        // écran ; il suffit de dépiler pour le révéler.
+        Navigator.of(context).popUntil((route) => route.isFirst);
       },
     );
   }
@@ -79,6 +81,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Connexion')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),

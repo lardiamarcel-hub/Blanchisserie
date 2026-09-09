@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../providers/auth_provider.dart';
-import '../../screens/auth/phone_login_screen.dart';
-import '../../screens/auth/profile_setup_screen.dart';
 import '../../screens/client/client_home_screen.dart';
 import '../../screens/collecteur/collecteur_home_screen.dart';
 import '../../screens/gerant/gerant_dashboard_screen.dart';
+import '../../screens/auth/profile_setup_screen.dart';
 import '../../screens/splash_screen.dart';
+import '../../screens/visitor/visitor_home_screen.dart';
 
 /// Aiguille l'utilisateur vers le bon écran selon son état de connexion,
 /// son rôle et l'avancement de son profil. C'est le seul endroit de l'app
@@ -22,9 +22,12 @@ class AuthGate extends ConsumerWidget {
 
     return etatAuth.when(
       loading: () => const SplashScreen(),
-      error: (_, __) => const PhoneLoginScreen(),
+      error: (_, __) => const VisitorHomeScreen(),
       data: (utilisateurFirebase) {
-        if (utilisateurFirebase == null) return const PhoneLoginScreen();
+        // Non connecté : l'application reste consultable (catalogue des
+        // services). La connexion n'est demandée qu'au moment de commander
+        // (bouton "Demander une collecte" ou "Se connecter").
+        if (utilisateurFirebase == null) return const VisitorHomeScreen();
 
         final profil = ref.watch(profilUtilisateurProvider);
         return profil.when(

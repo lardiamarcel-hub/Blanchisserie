@@ -86,7 +86,9 @@ service cloud.firestore {
     // Tarifs
     // ---------------------------------------------------------------
     match /tarifs/{tarifId} {
-      allow read: if estConnecte();
+      // Lecture publique : la grille tarifaire s'affiche dès l'écran
+      // d'accueil, avant toute connexion (catalogue des services).
+      allow read: if true;
       allow write: if estGerant();
     }
   }
