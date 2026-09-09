@@ -12,6 +12,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Requis par flutter_local_notifications (API Java 8+ desugarées).
+        isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig {
@@ -45,6 +47,7 @@ flutter {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("androidx.multidex:multidex:2.0.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
 // Le plugin google-services exige google-services.json et fait échouer le
