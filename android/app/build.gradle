@@ -2,7 +2,6 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -55,4 +54,12 @@ flutter {
 dependencies {
     implementation platform("com.google.firebase:firebase-bom:33.1.0")
     implementation "androidx.multidex:multidex:2.0.1"
+}
+
+// Le plugin google-services exige google-services.json et fait échouer le
+// build s'il est absent. Tant que le projet Firebase réel n'est pas encore
+// connecté (voir lib/firebase_options.dart), on l'applique seulement si le
+// fichier existe, pour permettre un build de démonstration sans backend.
+if (file("google-services.json").exists()) {
+    apply plugin: "com.google.gms.google-services"
 }

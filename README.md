@@ -13,6 +13,29 @@ vues selon le rôle : **client**, **collecteur**, **gérant**.
 - Interface entièrement en français, persistance offline Firestore
   activée (les actions faites sans réseau se synchronisent seules).
 
+## Obtenir l'APK sans être développeur·se
+
+Chaque envoi de code sur ce dépôt déclenche automatiquement
+(`.github/workflows/build-apk.yml`) une construction de l'application sur
+les serveurs GitHub, qui publie le fichier `.apk` prêt à installer dans
+l'onglet **Releases** du dépôt GitHub :
+
+`https://github.com/lardiamarcel-hub/Blanchisserie/releases`
+
+Ouvrez ce lien sur le téléphone Android, téléchargez `app-release.apk` de
+la version la plus récente, ouvrez le fichier téléchargé pour l'installer
+(Android demandera d'autoriser « Installer des applications inconnues »
+la première fois — c'est normal, il ne s'agit pas du Play Store).
+
+**Tant que le projet Firebase réel n'est pas connecté, cet APK fonctionne
+en mode démonstration** : tous les écrans s'affichent, mais la connexion
+par téléphone/SMS ne peut pas encore fonctionner (elle a besoin d'un
+projet Firebase, qui doit obligatoirement être créé avec le compte Google
+du propriétaire de l'activité, personne d'autre ne peut le faire à sa
+place). Une fois ce projet créé et ses informations transmises, un
+nouveau build automatique produit l'APK définitif, pleinement
+fonctionnel, sans rien réinstaller de plus.
+
 ## Arborescence
 
 ```

@@ -15,7 +15,6 @@ android/gradlew
 android/gradlew.bat
 android/gradle/wrapper/gradle-wrapper.jar
 android/local.properties
-android/app/google-services.json
 android/key.properties
 *.jks
 *.keystore

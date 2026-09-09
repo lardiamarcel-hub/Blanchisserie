@@ -1,0 +1,51 @@
+name: Construire l'APK
+
+# Construit automatiquement le fichier .apk à chaque envoi de code, et le
+# publie comme "Release" GitHub (page de téléchargement directe, aucun
+# outil de développeur nécessaire pour le récupérer).
+on:
+  push:
+    branches:
+      - claude/laundry-app-ouagadougou-bb7i0w
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Installer Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Installer les dépendances
+        run: flutter pub get
+
+      - name: Construire l'APK (release)
+        run: flutter build apk --release
+
+      - name: Publier l'APK en tant que Release GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: "Blanchisserie — build #${{ github.run_number }}"
+          body: |
+            APK généré automatiquement à partir du commit ${{ github.sha }}.
+
+            Téléchargez le fichier `app-release.apk` ci-dessous, ouvrez-le sur
+            votre téléphone Android pour l'installer (autorisez
+            « Installer des applications inconnues » si demandé).
+          files: build/app/outputs/flutter-apk/app-release.apk
